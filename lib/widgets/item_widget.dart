@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:meet/models/message_model.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:meet/widgets/show_snackbar.dart';
 
 import '../slidable_action.dart';
 
@@ -20,30 +21,18 @@ class _ItemWidgetState extends State<ItemWidget> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(right: 5.0, left: 5.0),
+      padding: const EdgeInsets.all(0),
       child: Card(
-        child: Slidable(
-          actionPane: SlidableScrollActionPane(),
-          actionExtentRatio: 0.15,
-          actions: <Widget>[
-            IconSlideAction(
-              icon: Icons.delete,
-              foregroundColor: Colors.red,
-              color: Color(0x1A000000),
-              onTap: () => onDismissed(SlidableAction.delete) ,
-            ),
-          ],
-
-          secondaryActions: <Widget>[
-            IconSlideAction(
-              icon: Icons.reply,
-              foregroundColor: Colors.green,
-              color: Color(0x1A000000),
-              onTap: () => onDismissed(SlidableAction.reply),
-            ),
-          ],
           child: ListTile(
-
+            onTap: (){
+              final slidable = Slidable.of(context)!;
+              final isClosed = slidable.renderingMode == SlidableRenderingMode.none;
+              if(isClosed){
+                slidable.open();
+              }else{
+                slidable.close();
+              }
+            },
               onLongPress: () async{
                 final number = await showCupertinoDialog(
                     context: context,
@@ -62,17 +51,18 @@ class _ItemWidgetState extends State<ItemWidget> {
                     print('mark');
                     break;
                   case 4:
-                    print('delete');
+                    //setState(() =>  );
+                    ShowSnackbar.buildErrorSnackbar(context,"Deleted successfully!");
+                    //print('delete');
+
                     break;
                 }
               },
             leading: Image.asset(widget.item.sender.imageUrl),
             title: Text(widget.item.sender.name),
             subtitle: Text(widget.item.text),
-            trailing: Text(widget.item.time,
-            )
+            trailing: Text(widget.item.time)
           ),
-        )
       ),
     );
   }
@@ -113,8 +103,4 @@ class _ItemWidgetState extends State<ItemWidget> {
       ),
     ],
   );
-
-  onDismissed(SlidableAction action) {
-    setState(() => widget.item.
-  }
 }
